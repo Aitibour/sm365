@@ -1,0 +1,127 @@
+version: "3.9"
+
+services:
+  proxy:
+    image: traefik:v3.0
+    command:
+      - --api.dashboard=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=${TRAEFIK_ACME_EMAIL}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_letsencrypt:/letsencrypt
+    restart: unless-stopped
+
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm ci && npm run build && npm run start"
+    volumes:
+      - ../../apps/web:/app
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${WEB_PORT}
+      NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME}
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=Host(`${APP_DOMAIN}`)
+      - traefik.http.routers.web.entrypoints=websecure
+      - traefik.http.routers.web.tls.certresolver=le
+      - traefik.http.services.web.loadbalancer.server.port=${WEB_PORT}
+    restart: unless-stopped
+
+  api:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm ci && npm run build && npm run start"
+    volumes:
+      - ../../apps/api:/app
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${INTERNAL_API_PORT}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api.rule=Host(`${API_DOMAIN}`)
+      - traefik.http.routers.api.entrypoints=websecure
+      - traefik.http.routers.api.tls.certresolver=le
+      - traefik.http.services.api.loadbalancer.server.port=${INTERNAL_API_PORT}
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  mautic:
+    image: ${MAUTIC_IMAGE}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mautic.rule=Host(`${MARKETING_DOMAIN}`)
+      - traefik.http.routers.mautic.entrypoints=websecure
+      - traefik.http.routers.mautic.tls.certresolver=le
+      - traefik.http.services.mautic.loadbalancer.server.port=80
+    restart: unless-stopped
+
+  twenty:
+    image: ${TWENTY_IMAGE}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.twenty.rule=Host(`${CRM_DOMAIN}`)
+      - traefik.http.routers.twenty.entrypoints=websecure
+      - traefik.http.routers.twenty.tls.certresolver=le
+      - traefik.http.services.twenty.loadbalancer.server.port=3000
+    restart: unless-stopped
+
+  chatwoot:
+    image: ${CHATWOOT_IMAGE}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.chatwoot.rule=Host(`${CHAT_DOMAIN}`)
+      - traefik.http.routers.chatwoot.entrypoints=websecure
+      - traefik.http.routers.chatwoot.tls.certresolver=le
+      - traefik.http.services.chatwoot.loadbalancer.server.port=3000
+    restart: unless-stopped
+
+  postiz:
+    image: ${POSTIZ_IMAGE}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.postiz.rule=Host(`${SOCIAL_DOMAIN}`)
+      - traefik.http.routers.postiz.entrypoints=websecure
+      - traefik.http.routers.postiz.tls.certresolver=le
+      - traefik.http.services.postiz.loadbalancer.server.port=3000
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  traefik_letsencrypt:

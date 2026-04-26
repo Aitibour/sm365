@@ -1,0 +1,145 @@
+.page {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(22, 31, 56, 0.08);
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 145, 77, 0.12);
+  color: #9a3412;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.card h1,
+.sectionTitle {
+  margin-top: 1rem;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.06em;
+}
+
+.card p {
+  margin-top: 0.8rem;
+  color: var(--muted-foreground);
+  line-height: 1.7;
+}
+
+.inviteCard {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.inviteCard span {
+  color: var(--muted-foreground);
+}
+
+.table {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.25rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 0.8fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.row strong,
+.row span {
+  display: block;
+}
+
+.row span {
+  color: var(--muted-foreground);
+}
+
+.inviteForm,
+.roleForm {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.45rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field span {
+  font-weight: 600;
+}
+
+.field input,
+.select {
+  min-height: 2.7rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(22, 31, 56, 0.12);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.96);
+  font: inherit;
+}
+
+.button {
+  min-height: 2.7rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #111827, #0f3d91);
+  color: #f8fafc;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+.error {
+  color: #b42318;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.success {
+  color: #067647;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.token {
+  font-family: var(--font-geist-mono), monospace;
+  word-break: break-all;
+}
+
+.empty {
+  margin-top: 1rem;
+  color: var(--muted-foreground);
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

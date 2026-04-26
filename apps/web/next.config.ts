@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   turbopack: {
-    root: "C:/Users/Abdel/Documents/Claude Code/Social Media 365",
+    root: path.resolve(__dirname, "../.."),
   },
 };
 

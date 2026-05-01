@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NEXT_IGNORE_INCORRECT_LOCKFILE=1 next dev",
-    "build": "cross-env NEXT_IGNORE_INCORRECT_LOCKFILE=1 next build",
+    "build": "cross-env NEXT_IGNORE_INCORRECT_LOCKFILE=1 next build && node scripts/fix-netlify-paths.mjs",
     "start": "cross-env NEXT_IGNORE_INCORRECT_LOCKFILE=1 next start",
     "lint": "eslint"
   },
@@ -14,6 +14,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

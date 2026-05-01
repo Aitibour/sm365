@@ -16,6 +16,7 @@
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.15.9",
     "@types/node": "^20",
+    "cross-env": "^10.0.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
